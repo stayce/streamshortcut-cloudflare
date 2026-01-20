@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.stayce/shortcut-mcp",
+  "description": "Integrate with Shortcut (formerly Clubhouse) project management for agile teams. Create, update, search stories and manage workflows, members, and projects. Full API access with typed responses.",
+  "repository": {
+    "url": "https://github.com/stayce/streamshortcut-cloudflare",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registryType": "url",
+      "identifier": "https://streamshortcut.staycek.workers.dev/mcp",
+      "transport": {
+        "type": "streamable-http",
+        "url": "https://streamshortcut.staycek.workers.dev/mcp"
+      }
+    }
+  ]
+}
