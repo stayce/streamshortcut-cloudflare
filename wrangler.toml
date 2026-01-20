@@ -1,0 +1,8 @@
+# StreamShortcut MCP Server - Cloudflare Workers
+
+name = "streamshortcut"
+main = "src/index.ts"
+compatibility_date = "2025-01-13"
+compatibility_flags = ["nodejs_compat"]
+
+# Set secret via: wrangler secret put SHORTCUT_API_TOKEN
