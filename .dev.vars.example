@@ -1,0 +1,7 @@
+# Shortcut API Token
+# Get yours at: Shortcut Settings > API Tokens
+#
+# For local development, copy this file to .dev.vars
+# For production, use: wrangler secret put SHORTCUT_API_TOKEN
+
+SHORTCUT_API_TOKEN=your_api_token_here
