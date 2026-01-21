@@ -1,30 +1,18 @@
 {
-  "name": "StreamShortcut",
-  "description": "Lightweight Shortcut.com integration for project management. One tool with 8 actions: search stories, get details, update state/estimate/owner, add comments, create stories, view epics, and raw API access.",
+  "name": "shortcut",
+  "description": "Lightweight Shortcut.com integration for project management. One tool with 10 actions: search stories, get details, update state/estimate/owner, add comments, create stories, view workflows/members/projects, and raw API access.",
   "version": "1.0.0",
   "author": {
     "name": "@stayce",
     "url": "https://github.com/stayce"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/stayce/streamshortcut-cloudflare"
-  },
-  "mcp": {
-    "type": "remote",
-    "transport": "streamable-http",
-    "url": "https://streamshortcut.staycek.workers.dev/mcp"
-  },
-  "categories": [
-    "Productivity",
-    "Project Management"
-  ],
-  "tools": [
-    {
-      "name": "shortcut",
-      "description": "Interact with Shortcut.com with actions: search, get, update, comment, create, epic, api, help"
+  "repository": "https://github.com/stayce/streamshortcut-cloudflare",
+  "mcpServers": {
+    "shortcut": {
+      "type": "http",
+      "url": "https://streamshortcut.staycek.workers.dev/mcp"
     }
-  ],
+  },
   "keywords": [
     "shortcut",
     "project-management",
