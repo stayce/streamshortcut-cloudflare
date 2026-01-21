@@ -12,25 +12,18 @@ import { handleAction } from "./handlers";
 import { Env, SERVER_NAME, SERVER_VERSION, ShortcutParams } from "./types";
 
 /**
- * Create MCP server with single tool configured for the given environment
+ * Create MCP server with single tool configured for the given token
  */
-function createServer(env: Env) {
+function createServer(token: string) {
   const server = new McpServer({
     name: SERVER_NAME,
     version: SERVER_VERSION,
   });
 
-  const client = new ShortcutClient(env.SHORTCUT_API_TOKEN);
+  const client = new ShortcutClient(token);
 
   // Single tool with action dispatch
   server.tool("shortcut", ShortcutParams.shape, async (args) => {
-    if (!env.SHORTCUT_API_TOKEN) {
-      return {
-        content: [{ type: "text" as const, text: "Error: SHORTCUT_API_TOKEN not configured" }],
-        isError: true,
-      };
-    }
-
     const params = ShortcutParams.parse(args);
     return handleAction(params, client);
   });
@@ -81,7 +74,34 @@ export default {
 
     // MCP endpoint - streamable HTTP transport
     if (url.pathname === "/mcp") {
-      const server = createServer(env);
+      // Require user's Shortcut API token via header
+      const token = request.headers.get("X-Shortcut-Token");
+
+      if (!token) {
+        return new Response(
+          JSON.stringify({
+            error: "Missing X-Shortcut-Token header",
+            message: "You must provide your own Shortcut API token. Get one at: https://app.shortcut.com/settings/account/api-tokens",
+            example: {
+              mcpServers: {
+                shortcut: {
+                  type: "http",
+                  url: "https://streamshortcut.staycek.workers.dev/mcp",
+                  headers: {
+                    "X-Shortcut-Token": "your-token-here"
+                  }
+                }
+              }
+            }
+          }),
+          {
+            status: 401,
+            headers: { "Content-Type": "application/json" }
+          }
+        );
+      }
+
+      const server = createServer(token);
       const handler = createMcpHandler(server);
       return handler(request, env, ctx);
     }

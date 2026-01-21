@@ -9,8 +9,9 @@ export const SERVER_NAME = "streamshortcut";
 export const SERVER_VERSION = "1.0.0";
 
 // Environment interface for Cloudflare Workers
+// Note: SHORTCUT_API_TOKEN is provided by user via X-Shortcut-Token header
 export interface Env {
-  SHORTCUT_API_TOKEN: string;
+  // No server-side secrets - users provide their own token
 }
 
 // MCP Tool result type

@@ -1,6 +1,6 @@
 # StreamShortcut (Cloudflare Workers)
 
-A lightweight Shortcut MCP deployed on Cloudflare Workers. One tool, eight actions.
+A lightweight Shortcut MCP deployed on Cloudflare Workers. One tool, ten actions.
 
 **Live URL:** `https://streamshortcut.staycek.workers.dev/mcp`
 
@@ -18,11 +18,16 @@ StreamShortcut uses ~393 tokens — a **96.6% reduction**.
 | `update` | Change state, estimate, owner |
 | `comment` | Add comment to story |
 | `create` | Create new story |
-| `epic` | Get epic with its stories |
+| `stories` | List stories with filters |
+| `workflows` | List workflows and states |
+| `members` | List team members |
+| `projects` | List projects |
 | `api` | Raw REST API |
 | `help` | Documentation |
 
 ## Usage with Claude
+
+**You must provide your own Shortcut API token.** Get one at: https://app.shortcut.com/settings/account/api-tokens
 
 Add to your Claude Desktop config:
 
@@ -30,16 +35,35 @@ Add to your Claude Desktop config:
 {
   "mcpServers": {
     "shortcut": {
-      "type": "url",
-      "url": "https://streamshortcut.staycek.workers.dev/mcp"
+      "type": "http",
+      "url": "https://streamshortcut.staycek.workers.dev/mcp",
+      "headers": {
+        "X-Shortcut-Token": "your-token-here"
+      }
     }
   }
 }
 ```
 
-Note: This requires the SHORTCUT_API_TOKEN to be set on the server. For personal use, deploy your own instance.
+Or set the `SHORTCUT_API_TOKEN` environment variable and use:
 
-## Deploy Your Own
+```json
+{
+  "mcpServers": {
+    "shortcut": {
+      "type": "http",
+      "url": "https://streamshortcut.staycek.workers.dev/mcp",
+      "headers": {
+        "X-Shortcut-Token": "${SHORTCUT_API_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+## Deploy Your Own (Optional)
+
+If you prefer to self-host:
 
 1. Clone and install:
    ```bash
@@ -48,15 +72,12 @@ Note: This requires the SHORTCUT_API_TOKEN to be set on the server. For personal
    npm install
    ```
 
-2. Set your Shortcut API token:
-   ```bash
-   wrangler secret put SHORTCUT_API_TOKEN
-   ```
-
-3. Deploy:
+2. Deploy:
    ```bash
    npm run deploy
    ```
+
+No server-side secrets needed — users always provide their own token.
 
 ## Examples
 
@@ -66,8 +87,9 @@ Note: This requires the SHORTCUT_API_TOKEN to be set on the server. For personal
 {"action": "update", "id": "704", "state": "Done"}
 {"action": "comment", "id": "704", "body": "Fixed!"}
 {"action": "create", "name": "New bug", "type": "bug"}
-{"action": "epic", "id": "308"}
-{"action": "api", "method": "GET", "path": "/workflows"}
+{"action": "workflows"}
+{"action": "members"}
+{"action": "api", "method": "GET", "path": "/projects"}
 {"action": "help"}
 ```
 
