@@ -111,6 +111,8 @@ export const ShortcutParams = z.object({
     .describe("Story type. Used by create/update"),
   name: z.string().optional()
     .describe("Story title. Required for create; optional rename for update"),
+  description: z.string().optional()
+    .describe("Story description (Markdown). Used by create/update"),
   body: z.string().optional()
     .describe("Comment text. Required for comment"),
   epic: z.number().optional()

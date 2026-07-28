@@ -34,6 +34,7 @@ export async function handleAction(
           owner: params.owner,
           type: params.type,
           name: params.name,
+          description: params.description,
         });
         break;
 
@@ -50,6 +51,7 @@ export async function handleAction(
           epic: params.epic,
           state: params.state,
           owner: params.owner,
+          description: params.description,
         });
         break;
 
@@ -134,6 +136,7 @@ async function handleUpdate(
     owner?: string | null;
     type?: string;
     name?: string;
+    description?: string;
   }
 ): Promise<string> {
   const storyId = resolveId(id);
@@ -152,6 +155,7 @@ async function handleUpdate(
   if (updates.estimate !== undefined) input.estimate = updates.estimate;
   if (updates.name) input.name = updates.name;
   if (updates.type) input.story_type = updates.type;
+  if (updates.description !== undefined) input.description = updates.description;
 
   if (updates.owner !== undefined) {
     if (updates.owner === null) {
@@ -188,13 +192,19 @@ async function handleCreate(
     epic?: number;
     state?: string;
     owner?: string | null;
+    description?: string;
   }
 ): Promise<string> {
   const input: Record<string, unknown> = { name };
 
   if (options.state) {
     const stateId = await client.resolveState(options.state);
-    if (stateId) input.workflow_state_id = stateId;
+    if (stateId) {
+      input.workflow_state_id = stateId;
+    } else {
+      const allStates = await client.getAllStateNames();
+      return `State "${options.state}" not found. Valid: ${allStates.join(", ")}`;
+    }
   } else {
     // Default to first unstarted state
     const workflows = await client.getWorkflows();
@@ -207,6 +217,7 @@ async function handleCreate(
   if (options.type) input.story_type = options.type;
   if (options.estimate !== undefined) input.estimate = options.estimate;
   if (options.epic) input.epic_id = options.epic;
+  if (options.description !== undefined) input.description = options.description;
 
   if (options.owner) {
     const memberId = await client.resolveMember(options.owner);
@@ -255,16 +266,16 @@ function handleHelp(): string {
 **get** - Story details
   {"action": "get", "id": "704"}
 
-**update** - Change state, estimate, owner
+**update** - Change state, estimate, owner, type, name, description
   {"action": "update", "id": "704", "state": "Done"}
   {"action": "update", "id": "704", "estimate": 3, "owner": "me"}
 
 **comment** - Add comment
   {"action": "comment", "id": "704", "body": "Fixed!"}
 
-**create** - Create story (name required; type, estimate, state, epic, owner optional)
+**create** - Create story (name required; type, estimate, state, epic, owner, description optional)
   {"action": "create", "name": "Bug title", "type": "bug"}
-  {"action": "create", "name": "Bug title", "type": "bug", "estimate": 3, "state": "Ready", "epic": 308, "owner": "me"}
+  {"action": "create", "name": "Bug title", "type": "bug", "estimate": 3, "state": "Ready", "epic": 308, "owner": "me", "description": "Steps to reproduce..."}
   Note: if "state" is omitted, defaults to the first unstarted state in the default workflow.
 
 **epic** - Get epic with stories

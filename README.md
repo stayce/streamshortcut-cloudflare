@@ -15,9 +15,9 @@ StreamShortcut uses ~500 tokens — a **~96% reduction**.
 |--------|---------|
 | `search` | Find stories (default: your active stories); text query or structured filters |
 | `get` | Story details by ID or URL |
-| `update` | Change state, estimate, owner, type, or name |
+| `update` | Change state, estimate, owner, type, name, or description |
 | `comment` | Add comment to story |
-| `create` | Create story with type, estimate, state, epic, owner |
+| `create` | Create story with type, estimate, state, epic, owner, description |
 | `epic` | Epic details with its stories |
 | `api` | Raw REST API access for everything else |
 | `help` | Documentation |
