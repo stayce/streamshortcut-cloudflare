@@ -6,7 +6,7 @@ import { z } from "zod";
 
 // Server metadata
 export const SERVER_NAME = "streamshortcut";
-export const SERVER_VERSION = "1.1.0";
+export const SERVER_VERSION = "1.2.0";
 
 // Environment interface for Cloudflare Workers
 // Note: SHORTCUT_API_TOKEN is provided by user via X-Shortcut-Token header

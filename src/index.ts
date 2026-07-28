@@ -74,14 +74,20 @@ export default {
 
     // MCP endpoint - streamable HTTP transport
     if (url.pathname === "/mcp") {
-      // Require user's Shortcut API token via header
-      const token = request.headers.get("X-Shortcut-Token");
+      // Require user's Shortcut API token, via the custom header or
+      // a standard Authorization: Bearer header (some clients and proxies
+      // can only set the latter).
+      const bearer = request.headers
+        .get("Authorization")
+        ?.match(/^Bearer\s+(.+)$/i)?.[1]
+        ?.trim();
+      const token = request.headers.get("X-Shortcut-Token")?.trim() || bearer;
 
       if (!token) {
         return new Response(
           JSON.stringify({
-            error: "Missing X-Shortcut-Token header",
-            message: "You must provide your own Shortcut API token. Get one at: https://app.shortcut.com/settings/account/api-tokens",
+            error: "Missing Shortcut API token",
+            message: "Provide your own Shortcut API token via the X-Shortcut-Token header or Authorization: Bearer <token>. Get one at: https://app.shortcut.com/settings/account/api-tokens",
             example: {
               mcpServers: {
                 shortcut: {
@@ -96,7 +102,14 @@ export default {
           }),
           {
             status: 401,
-            headers: { "Content-Type": "application/json" }
+            headers: {
+              "Content-Type": "application/json",
+              // Machine-readable signal that credentials are required. No
+              // resource_metadata parameter: this server issues no OAuth and
+              // advertising it would send clients into a flow that cannot complete.
+              "WWW-Authenticate":
+                'Bearer realm="shortcut", error="invalid_request", error_description="Shortcut API token required via X-Shortcut-Token or Authorization: Bearer"',
+            }
           }
         );
       }

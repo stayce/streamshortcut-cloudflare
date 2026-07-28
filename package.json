@@ -1,6 +1,6 @@
 {
   "name": "streamshortcut-cloudflare",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "StreamShortcut MCP Server for Cloudflare Workers",
   "type": "module",
   "scripts": {

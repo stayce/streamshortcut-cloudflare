@@ -1,7 +1,7 @@
 {
   "name": "shortcut",
   "description": "Lightweight Shortcut.com integration for project management. One tool with 8 actions: search stories, get details, update state/estimate/owner, add comments, create stories with estimate/state/epic/owner, view epics, and raw API access.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": {
     "name": "@stayce",
     "url": "https://github.com/stayce"

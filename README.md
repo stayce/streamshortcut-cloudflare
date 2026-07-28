@@ -62,6 +62,19 @@ Add this to your Claude Desktop / Claude Code config:
 
 Either way, **restart Claude** afterwards so the new server is picked up.
 
+### Authentication
+
+The server is stateless and stores nothing — every request carries your own token,
+and it is never persisted. Send it either way:
+
+```
+X-Shortcut-Token: your-token-here
+Authorization: Bearer your-token-here
+```
+
+`X-Shortcut-Token` takes precedence if both are present. There is no OAuth flow;
+an unauthenticated request returns `401` with a `WWW-Authenticate` header.
+
 ## Verify It Works
 
 Check the service is up (no token needed):
@@ -90,7 +103,7 @@ Once configured in Claude, just ask: *"show me my Shortcut stories."*
 
 | Symptom | Cause |
 |---------|-------|
-| `401 Missing X-Shortcut-Token header` | No token sent — check the header name is exactly `X-Shortcut-Token` |
+| `401 Missing Shortcut API token` | No token sent — use either `X-Shortcut-Token` or `Authorization: Bearer` |
 | `Error: API error (401): Unauthorized` | Token reached the server but Shortcut rejected it — expired or wrong token, or an unexpanded `${SHORTCUT_API_TOKEN}` placeholder sent literally |
 | `403 Forbidden` from the worker | Cloudflare bot protection. Some default HTTP clients (e.g. Python's `urllib`) are blocked by user agent — set a normal `User-Agent` header |
 | Server missing after config edit | Claude needs a restart; it only reads MCP config at startup |
