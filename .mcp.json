@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "shortcut": {
+      "type": "http",
+      "url": "https://streamshortcut.staycek.workers.dev/mcp",
+      "headers": {
+        "X-Shortcut-Token": "${SHORTCUT_API_TOKEN}"
+      }
+    }
+  }
+}

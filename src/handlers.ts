@@ -187,7 +187,7 @@ async function handleCreate(
     estimate?: number;
     epic?: number;
     state?: string;
-    owner?: string;
+    owner?: string | null;
   }
 ): Promise<string> {
   const input: Record<string, unknown> = { name };
@@ -257,12 +257,15 @@ function handleHelp(): string {
 
 **update** - Change state, estimate, owner
   {"action": "update", "id": "704", "state": "Done"}
+  {"action": "update", "id": "704", "estimate": 3, "owner": "me"}
 
 **comment** - Add comment
   {"action": "comment", "id": "704", "body": "Fixed!"}
 
-**create** - Create story
+**create** - Create story (name required; type, estimate, state, epic, owner optional)
   {"action": "create", "name": "Bug title", "type": "bug"}
+  {"action": "create", "name": "Bug title", "type": "bug", "estimate": 3, "state": "Ready", "epic": 308, "owner": "me"}
+  Note: if "state" is omitted, defaults to the first unstarted state in the default workflow.
 
 **epic** - Get epic with stories
   {"action": "epic", "id": "308"}

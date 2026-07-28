@@ -1,6 +1,6 @@
 {
   "name": "streamshortcut-cloudflare",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "StreamShortcut MCP Server for Cloudflare Workers",
   "type": "module",
   "scripts": {
@@ -8,13 +8,13 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/sdk": "1.25.2",
     "agents": "^0.3.6",
     "zod": "^3.22.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250109.0",
+    "@cloudflare/workers-types": "^4.20260702.1",
     "typescript": "^5.3.0",
-    "wrangler": "^3.99.0"
+    "wrangler": "~4.100.0"
   }
 }

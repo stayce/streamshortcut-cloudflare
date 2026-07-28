@@ -6,7 +6,7 @@ import { z } from "zod";
 
 // Server metadata
 export const SERVER_NAME = "streamshortcut";
-export const SERVER_VERSION = "1.0.0";
+export const SERVER_VERSION = "1.1.0";
 
 // Environment interface for Cloudflare Workers
 // Note: SHORTCUT_API_TOKEN is provided by user via X-Shortcut-Token header
@@ -14,8 +14,9 @@ export interface Env {
   // No server-side secrets - users provide their own token
 }
 
-// MCP Tool result type
+// MCP Tool result type (index signature required by the SDK's CallToolResult)
 export interface ToolResult {
+  [key: string]: unknown;
   content: Array<{ type: "text"; text: string }>;
   isError?: boolean;
 }
@@ -94,18 +95,30 @@ export interface ShortcutSearchResponse {
 
 // Shortcut action schema - single tool with action dispatch
 export const ShortcutParams = z.object({
-  action: z.enum(["search", "get", "update", "comment", "create", "epic", "api", "help"]),
-  query: z.union([z.string(), z.record(z.unknown())]).optional(),
-  id: z.string().optional(),
-  state: z.string().optional(),
-  estimate: z.number().optional(),
-  owner: z.string().nullable().optional(),
-  type: z.enum(["feature", "bug", "chore"]).optional(),
-  name: z.string().optional(),
-  body: z.string().optional(),
-  epic: z.number().optional(),
-  method: z.string().optional(),
-  path: z.string().optional(),
+  action: z.enum(["search", "get", "update", "comment", "create", "epic", "api", "help"])
+    .describe("Operation to perform"),
+  query: z.union([z.string(), z.record(z.unknown())]).optional()
+    .describe("search: free-text string, or a filter object {owner, state, epic, iteration, type, archived}"),
+  id: z.string().optional()
+    .describe("Story or epic ID (e.g. '704', 'sc-704', or a Shortcut URL). Required for get/update/comment/epic"),
+  state: z.string().optional()
+    .describe("Workflow state name (e.g. 'Ready', 'In Progress', 'Done'), resolved to workflow_state_id. Used by create/update"),
+  estimate: z.number().optional()
+    .describe("Point estimate for the story. Used by create/update"),
+  owner: z.string().nullable().optional()
+    .describe("Owner name, mention name, or 'me'; pass null to unassign. Used by create/update"),
+  type: z.enum(["feature", "bug", "chore"]).optional()
+    .describe("Story type. Used by create/update"),
+  name: z.string().optional()
+    .describe("Story title. Required for create; optional rename for update"),
+  body: z.string().optional()
+    .describe("Comment text. Required for comment"),
+  epic: z.number().optional()
+    .describe("Epic ID to attach the story to. Used by create"),
+  method: z.string().optional()
+    .describe("HTTP method for the api action (GET, POST, PUT, DELETE)"),
+  path: z.string().optional()
+    .describe("REST API path for the api action, e.g. '/workflows'"),
 });
 
 export type ShortcutParamsType = z.infer<typeof ShortcutParams>;
