@@ -26,7 +26,19 @@ StreamShortcut uses ~500 tokens — a **~96% reduction**.
 
 **You must provide your own Shortcut API token.** Get one at: https://app.shortcut.com/settings/account/api-tokens
 
-Add to your Claude Desktop config:
+### Option 1: `claude mcp add` (recommended)
+
+One command, no file editing. Replace `YOUR_TOKEN` with your real token:
+
+```bash
+claude mcp add --transport http shortcut https://streamshortcut.staycek.workers.dev/mcp --header "X-Shortcut-Token: YOUR_TOKEN"
+```
+
+Use `-s user` to make it available in every project instead of just the current one.
+
+### Option 2: Edit the config directly
+
+Add this to your Claude Desktop / Claude Code config:
 
 ```json
 {
@@ -42,21 +54,46 @@ Add to your Claude Desktop config:
 }
 ```
 
-Or set the `SHORTCUT_API_TOKEN` environment variable and use:
+> **Put the literal token in the config.** A `"${SHORTCUT_API_TOKEN}"` reference only
+> resolves if the variable is present in the environment the app was *launched* from.
+> On macOS, apps started from the Dock or Finder do **not** read `~/.zshrc`, so the
+> variable will be undefined and the server will fail to authenticate. Environment
+> references work reliably only when you launch from a terminal.
 
-```json
-{
-  "mcpServers": {
-    "shortcut": {
-      "type": "http",
-      "url": "https://streamshortcut.staycek.workers.dev/mcp",
-      "headers": {
-        "X-Shortcut-Token": "${SHORTCUT_API_TOKEN}"
-      }
-    }
-  }
-}
+Either way, **restart Claude** afterwards so the new server is picked up.
+
+## Verify It Works
+
+Check the service is up (no token needed):
+
+```bash
+curl -s https://streamshortcut.staycek.workers.dev/health
 ```
+
+Confirm your token is valid, straight against Shortcut:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" https://api.app.shortcut.com/api/v3/member -H "Shortcut-Token: YOUR_TOKEN"
+```
+
+`200` means the token is good; `401` means it's wrong or expired.
+
+Then test the full path — this returns your active stories:
+
+```bash
+curl -s https://streamshortcut.staycek.workers.dev/mcp -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" -H "X-Shortcut-Token: YOUR_TOKEN" -d '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"shortcut","arguments":{"action":"search"}}}'
+```
+
+Once configured in Claude, just ask: *"show me my Shortcut stories."*
+
+## Troubleshooting
+
+| Symptom | Cause |
+|---------|-------|
+| `401 Missing X-Shortcut-Token header` | No token sent — check the header name is exactly `X-Shortcut-Token` |
+| `Error: API error (401): Unauthorized` | Token reached the server but Shortcut rejected it — expired or wrong token, or an unexpanded `${SHORTCUT_API_TOKEN}` placeholder sent literally |
+| `403 Forbidden` from the worker | Cloudflare bot protection. Some default HTTP clients (e.g. Python's `urllib`) are blocked by user agent — set a normal `User-Agent` header |
+| Server missing after config edit | Claude needs a restart; it only reads MCP config at startup |
 
 ## Deploy Your Own (Optional)
 
